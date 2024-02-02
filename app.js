@@ -1,64 +1,51 @@
-require('dotenv').config();
-const express = require('express');
+require("dotenv").config();
+const express = require("express");
 const app = express();
-const mongoose = require('mongoose');
-const port = process.env.PORT;
-const Item = require('./model');
+const PORT = process.env.PORT || 3000;
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
+const colors = require("colors");
+const path = require("path");
+const { imagesRouter } = require("./routes/imagesRoute");
+const { contactRouter } = require("./routes/contactRoute");
+const { dbConnect } = require("./connection");
+const { userRouter } = require("./routes/userRoute");
+const { blogsRouter } = require("./routes/blogsRoute");
+const { cookieRouter } = require("./routes/cookieRoute");
+const { videoRouter } = require("./routes/videoRoute");
+const { chatbotRouter } = require("./routes/chatbotRoutes");
 
-app.use(express.json());
+// middleware
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use(
+  "/video-uploads",
+  express.static(path.join(__dirname, "video-uploads"))
+);
+app.use(cors());
+app.use(cookieParser());
 
-mongoose
-  .connect(process.env.MONGODB_URL)
+// DB Connection
+dbConnect(process.env.MONGODB_URL)
   .then(() => {
-    console.log("DB CONNECTED");
+    console.log("DB Connection Successfull".white.bgGreen);
   })
-  .catch((err) => {
-    console.error("DB CONNECTION FAILED", err);
+  .catch((e) => {
+    console.log("No DB Connection".white.bgRed + e);
   });
 
+// Routes
+app.use("/images", imagesRouter);
+app.use("/contact", contactRouter);
+app.use("/users", userRouter);
+app.use("/blogs", blogsRouter);
+app.use("/cookies", cookieRouter);
+app.use("/videos", videoRouter);
+app.use("/chatbots", chatbotRouter);
 
-
-
-
-const items = [
-  { id: 1, name: 'Item 1' },
-  { id: 2, name: 'Item 2' },
-  { id: 3, name: 'Item 3' },
-];
-
-// Middleware to parse JSON requests
-app.use(express.json());
-
-app.post('/api/items', async (req, res) => {
-  try {
-    const { name, description } = req.body;
-
-    if (!name || !description) {
-      return res.status(400).json({ error: 'Name and description are required' });
-    }
-
-    const newItem = new Item({ name, description });
-    await newItem.save();
-
-    res.status(201).json(newItem);
-  } catch (error) {
-    console.error('Error creating item:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// Define a route to get a list of items
-app.get('/api/items', async (req, res) => {
-  try {
-    const items = await Item.find();
-    res.json(items);
-  } catch (error) {
-    console.error('Error fetching items:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// Start the server
-app.listen(port, () => {
-  console.log(`Server is listening at http://localhost:${port}`);
+// Server Connection
+app.listen(PORT, () => {
+  console.log(`Listening on ${PORT}`.white.bgGreen);
 });
