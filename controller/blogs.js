@@ -29,7 +29,6 @@ const createBlogs = async (req, res) => {
 const getBlogs = async (req, res) => {
   try {
     const blogs = await blogsModel.find(); // Retrieve all blogs from the database
-
     res.status(200).json(blogs);
   } catch (error) {
     console.error("Error fetching blogs:", error);
