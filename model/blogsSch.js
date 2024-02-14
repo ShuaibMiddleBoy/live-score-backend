@@ -1,5 +1,9 @@
 const mongoose = require("mongoose");
 
+// Import the comment schema
+const { Schema } = mongoose;
+const { commentSchema } = require("./commentSch");
+
 const blogsSchema = new mongoose.Schema(
   {
     Title: {
@@ -23,6 +27,11 @@ const blogsSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    // Reference to comments
+    comments: [{
+      type: Schema.Types.ObjectId,
+      ref: 'Comment'
+    }]
   },
   { timestamps: true }
 );

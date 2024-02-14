@@ -15,6 +15,7 @@ const { blogsRouter } = require("./routes/blogsRoute");
 const { cookieRouter } = require("./routes/cookieRoute");
 const { videoRouter } = require("./routes/videoRoute");
 const { chatbotRouter } = require("./routes/chatbotRoutes");
+const {commentRouter} = require("./routes/commentRoute")
 
 // middleware
 app.use(bodyParser.json());
@@ -44,6 +45,7 @@ app.use("/blogs", blogsRouter);
 app.use("/cookies", cookieRouter);
 app.use("/videos", videoRouter);
 app.use("/chatbots", chatbotRouter);
+app.use("/comments", commentRouter);
 
 // Server Connection
 app.listen(PORT, () => {
